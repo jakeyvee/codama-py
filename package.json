@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "build": "rimraf dist && pnpm build:src && pnpm build:types",
-    "build:src": "tsup src/index.ts --format cjs,esm --no-dts --platform node --config tsup.config.node.ts",
+    "build:src": "tsup --no-dts --config tsup.config.node.ts",
     "build:types": "tsc --build tsconfig.declarations.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

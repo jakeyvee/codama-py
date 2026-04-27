@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { dirname as pathDirname, join } from "node:path";
 import { fileURLToPath } from 'node:url';
 
@@ -112,7 +113,13 @@ export const render = (
   options?: NunJucksOptions,
 ): string => {
   const dirname = __ESM__ ? pathDirname(fileURLToPath(import.meta.url)) : __dirname;
-  const templates = join(dirname, "..", "..", "public", "templates");
+  // In the published bundle (dist/), tsup's `publicDir` copies templates next
+  // to the bundle at `dist/templates/`. In dev (running source via tsx /
+  // vitest from `src/utils/render.ts`), they live at `<repo>/public/templates`.
+  // Try both so the renderer works in either context.
+  const distTemplates = join(dirname, "templates");
+  const devTemplates = join(dirname, "..", "..", "public", "templates");
+  const templates = existsSync(distTemplates) ? distTemplates : devTemplates;
   const env = nunjucks.configure(templates, {
     autoescape: false,
     trimBlocks: true,
